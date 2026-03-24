@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:tube_lens/features/analysis/models/channel_model.dart';
 
-class UploadTimeHeatMap extends StatelessWidget {
+class UploadTimeHeatMap extends StatefulWidget {
   final ChannelModel? channel;
 
-  const UploadTimeHeatMap({
-    super.key,
-    required this.channel,
-  });
+  const UploadTimeHeatMap({super.key, required this.channel});
 
-  static const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  static const slots = ["12AM","6AM","12PM","6PM","9PM"];
+  static const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  static const slots = ["12AM", "6AM", "12PM", "6PM", "9PM"];
+
+  @override
+  State<UploadTimeHeatMap> createState() => _UploadTimeHeatMapState();
+}
+
+class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
 
   Color getColor(int score) {
     if (score == 0) return const Color(0xff2c315a);
@@ -21,20 +26,27 @@ class UploadTimeHeatMap extends StatelessWidget {
   }
 
   bool isBestSlot(String day, String slot) {
-    if (channel!.bestUploadTime == null) return false;
+    if (widget.channel!.bestUploadTime == null) return false;
 
-    return channel!.bestUploadTime!.day.startsWith(day) &&
-        channel!.bestUploadTime!.time == slot;
+    return widget.channel!.bestUploadTime!.day.startsWith(day) &&
+        widget.channel!.bestUploadTime!.time == slot;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 3),
+      vsync: this,
+    )..repeat();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    final heatmap = channel!.getHeatmapGrid();
+    final heatmap = widget.channel!.getHeatmapGrid();
 
     return LayoutBuilder(
       builder: (context, constraints) {
-
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(18),
@@ -42,10 +54,7 @@ class UploadTimeHeatMap extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             gradient: const LinearGradient(
-              colors: [
-                Color(0xff1e2240),
-                Color(0xff2b2f55),
-              ],
+              colors: [Color(0xff1e2240), Color(0xff2b2f55)],
             ),
             border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.4)),
           ),
@@ -53,77 +62,79 @@ class UploadTimeHeatMap extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               /// HEADER
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-
-                  Row(
-                    children: [
-
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.access_time,
-                          color: Colors.blueAccent,
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Best Upload Time",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-
-                          SizedBox(height: 2),
-
-                          Text(
-                            "Optimal posting schedule based on engagement",
-                            style: TextStyle(
-                              color: Colors.white54,
-                              fontSize: 11,
-                            ),
+                          child: const Icon(
+                            Icons.access_time,
+                            color: Colors.blueAccent,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Best Upload Time",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                              SizedBox(height: 2),
+
+                              Text(
+                                "Optimal posting schedule based on engagement",
+                                style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 11,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.fade,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   /// PEAK INSIGHT BADGE
                   Container(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.orange.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         Icon(Icons.star, size: 14, color: Colors.orange),
                         SizedBox(width: 4),
                         Text(
                           "Peak Insight",
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontSize: 11,
-                          ),
+                          style: TextStyle(color: Colors.orange, fontSize: 11),
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
 
@@ -134,8 +145,8 @@ class UploadTimeHeatMap extends StatelessWidget {
                 children: [
                   const SizedBox(width: 42),
 
-                  ...slots.map(
-                        (slot) => Expanded(
+                  ...UploadTimeHeatMap.slots.map(
+                    (slot) => Expanded(
                       child: Text(
                         slot,
                         textAlign: TextAlign.center,
@@ -153,23 +164,16 @@ class UploadTimeHeatMap extends StatelessWidget {
 
               /// HEATMAP GRID
               Column(
-                children: List.generate(days.length, (dayIndex) {
-
+                children: List.generate(UploadTimeHeatMap.days.length, (
+                  dayIndex,
+                ) {
                   return Row(
                     children: [
-
                       /// DAY LABEL
-                      const SizedBox(
-                        width: 42,
-                        child: Text(
-                          "", // replaced below
-                        ),
-                      ),
-
                       SizedBox(
                         width: 42,
                         child: Text(
-                          days[dayIndex],
+                          UploadTimeHeatMap.days[dayIndex],
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
@@ -177,10 +181,14 @@ class UploadTimeHeatMap extends StatelessWidget {
                         ),
                       ),
 
-                      ...List.generate(slots.length, (slotIndex) {
-
+                      ...List.generate(UploadTimeHeatMap.slots.length, (
+                        slotIndex,
+                      ) {
                         int score = heatmap[dayIndex][slotIndex];
-                        bool best = isBestSlot(days[dayIndex], slots[slotIndex]);
+                        bool best = isBestSlot(
+                          UploadTimeHeatMap.days[dayIndex],
+                          UploadTimeHeatMap.slots[slotIndex],
+                        );
 
                         return Expanded(
                           child: Padding(
@@ -195,11 +203,20 @@ class UploadTimeHeatMap extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: best
-                                    ? const Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                  size: 16,
-                                )
+                                    ? RotationTransition(
+                                        turns: Tween(begin: 1.0, end: 0.0)
+                                            .animate(
+                                              CurvedAnimation(
+                                                parent: _animationController,
+                                                curve: Curves.easeInOut,
+                                              ),
+                                            ),
+                                        child: Icon(
+                                          Icons.star_rounded,
+                                          color: Colors.amber,
+                                          size: 20,
+                                        ),
+                                      )
                                     : null,
                               ),
                             ),
@@ -221,19 +238,15 @@ class UploadTimeHeatMap extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-
                   const Text(
                     "Low Engagement",
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
                   ),
 
                   Row(
                     children: List.generate(
                       5,
-                          (index) => Container(
+                      (index) => Container(
                         width: 18,
                         height: 10,
                         margin: const EdgeInsets.symmetric(horizontal: 3),
@@ -251,10 +264,7 @@ class UploadTimeHeatMap extends StatelessWidget {
 
                   const Text(
                     "High Engagement",
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
                   ),
                 ],
               ),
@@ -262,27 +272,24 @@ class UploadTimeHeatMap extends StatelessWidget {
               const SizedBox(height: 20),
 
               /// INSIGHT BOX
-              if (channel!.bestUploadTime != null)
+              if (widget.channel!.bestUploadTime != null)
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
                       gradient: const LinearGradient(
-                        colors: [
-                          Color(0xff3c3f85),
-                          Color(0xff2d2f6e),
-                        ],
+                        colors: [Color(0xff3c3f85), Color(0xff2d2f6e)],
                       ),
                       border: Border.all(
                         color: Colors.blueAccent.withValues(alpha: 0.4),
                       ),
                     ),
                     child: Text(
-                      "${channel!.bestUploadTime!.day} "
-                          "${channel!.bestUploadTime!.time} "
-                          "shows the highest engagement at "
-                          "${channel!.bestUploadTime!.engagement}%",
+                      "${widget.channel!.bestUploadTime!.day} "
+                      "${widget.channel!.bestUploadTime!.time} "
+                      "shows the highest engagement at "
+                      "${widget.channel!.bestUploadTime!.engagement}%",
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
