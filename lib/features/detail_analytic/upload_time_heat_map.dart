@@ -36,9 +36,10 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 3),
+      duration: const Duration(seconds: 5),
       vsync: this,
     )..repeat();
+    print('AnimationController duration: ${_animationController.duration}');
   }
 
   @override
@@ -126,7 +127,7 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.star, size: 14, color: Colors.orange),
+                        Icon(Icons.star_rounded, size: 14, color: Colors.orange),
                         SizedBox(width: 4),
                         Text(
                           "Peak Insight",
