@@ -185,8 +185,6 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar>
                       ),
                     ),
                   ),
-
-                  // ── Icons + labels row ───────────────────────────────
                   Row(
                     children: List.generate(itemCount, (i) {
                       final isActive = i == widget.currentIndex;
