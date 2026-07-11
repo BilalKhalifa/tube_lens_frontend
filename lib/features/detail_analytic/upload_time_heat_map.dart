@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:tube_lens/features/analysis/models/channel_model.dart';
 
-class UploadTimeHeatMap extends StatefulWidget {
+class UploadTimeHeatMap extends StatelessWidget {
   final ChannelModel? channel;
 
-  const UploadTimeHeatMap({super.key, required this.channel});
+  const UploadTimeHeatMap({
+    super.key,
+    required this.channel,
+  });
 
-  static const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  static const slots = ["12AM", "6AM", "12PM", "6PM", "9PM"];
-
-  @override
-  State<UploadTimeHeatMap> createState() => _UploadTimeHeatMapState();
-}
-
-class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
+  static const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  static const slots = ["12AM","6AM","12PM","6PM","9PM"];
 
   Color getColor(int score) {
     if (score == 0) return const Color(0xff2c315a);
@@ -26,28 +21,20 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
   }
 
   bool isBestSlot(String day, String slot) {
-    if (widget.channel!.bestUploadTime == null) return false;
+    if (channel!.bestUploadTime == null) return false;
 
-    return widget.channel!.bestUploadTime!.day.startsWith(day) &&
-        widget.channel!.bestUploadTime!.time == slot;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(seconds: 5),
-      vsync: this,
-    )..repeat();
-    print('AnimationController duration: ${_animationController.duration}');
+    return channel!.bestUploadTime!.day.startsWith(day) &&
+        channel!.bestUploadTime!.time == slot;
   }
 
   @override
   Widget build(BuildContext context) {
-    final heatmap = widget.channel!.getHeatmapGrid();
+
+    final heatmap = channel!.getHeatmapGrid();
 
     return LayoutBuilder(
       builder: (context, constraints) {
+
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(18),
@@ -55,7 +42,10 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             gradient: const LinearGradient(
-              colors: [Color(0xff1e2240), Color(0xff2b2f55)],
+              colors: [
+                Color(0xff1e2240),
+                Color(0xff2b2f55),
+              ],
             ),
             border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.4)),
           ),
@@ -63,79 +53,77 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
               /// HEADER
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.blueAccent.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.access_time,
-                            color: Colors.blueAccent,
-                          ),
+
+                  Row(
+                    children: [
+
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-
-                        const SizedBox(width: 12),
-
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Best Upload Time",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              SizedBox(height: 2),
-
-                              Text(
-                                "Optimal posting schedule based on engagement",
-                                style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 11,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.fade,
-                              ),
-                            ],
-                          ),
+                        child: const Icon(
+                          Icons.access_time,
+                          color: Colors.blueAccent,
                         ),
-                      ],
-                    ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Best Upload Time",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          SizedBox(height: 2),
+
+                          Text(
+                            "Optimal posting schedule based on engagement",
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
 
                   /// PEAK INSIGHT BADGE
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.orange.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Row(
+                    child: const Row(
                       children: [
-                        Icon(Icons.star_rounded, size: 14, color: Colors.orange),
+                        Icon(Icons.star, size: 14, color: Colors.orange),
                         SizedBox(width: 4),
                         Text(
                           "Peak Insight",
-                          style: TextStyle(color: Colors.orange, fontSize: 11),
+                          style: TextStyle(
+                            color: Colors.orange,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                  )
                 ],
               ),
 
@@ -146,7 +134,7 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
                 children: [
                   const SizedBox(width: 42),
 
-                  ...UploadTimeHeatMap.slots.map(
+                  ...slots.map(
                         (slot) => Expanded(
                       child: Text(
                         slot,
@@ -165,16 +153,23 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
 
               /// HEATMAP GRID
               Column(
-                children: List.generate(UploadTimeHeatMap.days.length, (
-                    dayIndex,
-                    ) {
+                children: List.generate(days.length, (dayIndex) {
+
                   return Row(
                     children: [
+
                       /// DAY LABEL
+                      const SizedBox(
+                        width: 42,
+                        child: Text(
+                          "", // replaced below
+                        ),
+                      ),
+
                       SizedBox(
                         width: 42,
                         child: Text(
-                          UploadTimeHeatMap.days[dayIndex],
+                          days[dayIndex],
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
@@ -182,14 +177,10 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
                         ),
                       ),
 
-                      ...List.generate(UploadTimeHeatMap.slots.length, (
-                          slotIndex,
-                          ) {
+                      ...List.generate(slots.length, (slotIndex) {
+
                         int score = heatmap[dayIndex][slotIndex];
-                        bool best = isBestSlot(
-                          UploadTimeHeatMap.days[dayIndex],
-                          UploadTimeHeatMap.slots[slotIndex],
-                        );
+                        bool best = isBestSlot(days[dayIndex], slots[slotIndex]);
 
                         return Expanded(
                           child: Padding(
@@ -204,19 +195,10 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: best
-                                    ? RotationTransition(
-                                  turns: Tween(begin: 1.0, end: 0.0)
-                                      .animate(
-                                    CurvedAnimation(
-                                      parent: _animationController,
-                                      curve: Curves.easeInOut,
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    Icons.star_rounded,
-                                    color: Colors.amber,
-                                    size: 20,
-                                  ),
+                                    ? const Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 16,
                                 )
                                     : null,
                               ),
@@ -239,9 +221,13 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+
                   const Text(
                     "Low Engagement",
-                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: 12,
+                    ),
                   ),
 
                   Row(
@@ -265,7 +251,10 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
 
                   const Text(
                     "High Engagement",
-                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -273,24 +262,27 @@ class _UploadTimeHeatMapState extends State<UploadTimeHeatMap>
               const SizedBox(height: 20),
 
               /// INSIGHT BOX
-              if (widget.channel!.bestUploadTime != null)
+              if (channel!.bestUploadTime != null)
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
                       gradient: const LinearGradient(
-                        colors: [Color(0xff3c3f85), Color(0xff2d2f6e)],
+                        colors: [
+                          Color(0xff3c3f85),
+                          Color(0xff2d2f6e),
+                        ],
                       ),
                       border: Border.all(
                         color: Colors.blueAccent.withValues(alpha: 0.4),
                       ),
                     ),
                     child: Text(
-                      "${widget.channel!.bestUploadTime!.day} "
-                          "${widget.channel!.bestUploadTime!.time} "
+                      "${channel!.bestUploadTime!.day} "
+                          "${channel!.bestUploadTime!.time} "
                           "shows the highest engagement at "
-                          "${widget.channel!.bestUploadTime!.engagement}%",
+                          "${channel!.bestUploadTime!.engagement}%",
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 13,

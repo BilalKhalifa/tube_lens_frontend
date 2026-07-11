@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:tube_lens/features/analysis/models/channel_model.dart';
+import 'package:tube_lens/features/detail_analytic/ai_channel_breakdown_page.dart';
 
 class AiInsightsSection extends StatelessWidget {
-  const AiInsightsSection({super.key});
+  final ChannelModel? channel;
+
+  const AiInsightsSection({
+    super.key,
+    this.channel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +40,9 @@ class AiInsightsSection extends StatelessWidget {
           _insightCard(
               icon: Icons.schedule,
               color: Colors.redAccent,
-              text: "Best performing videos are 8–12 minutes long"
+              text: channel != null && channel!.aiInsights.isNotEmpty
+                  ? channel!.aiInsights[0]
+                  : "Best performing videos are 8–12 minutes long"
           ),
 
           const SizedBox(height: 14),
@@ -41,7 +50,9 @@ class AiInsightsSection extends StatelessWidget {
           _insightCard(
               icon: Icons.flash_on,
               color: Colors.deepOrange,
-              text: "Upload consistency increased in last 90 days"
+              text: channel != null && channel!.aiInsights.length > 1
+                  ? channel!.aiInsights[1]
+                  : "Upload consistency increased in last 90 days"
           ),
 
           const SizedBox(height: 14),
@@ -49,7 +60,9 @@ class AiInsightsSection extends StatelessWidget {
           _insightCard(
               icon: Icons.track_changes,
               color: Colors.pinkAccent,
-              text: "High contrast thumbnails perform better"
+              text: channel != null && channel!.aiInsights.length > 2
+                  ? channel!.aiInsights[2]
+                  : "High contrast thumbnails perform better"
           ),
 
           const SizedBox(height: 20),
@@ -57,7 +70,20 @@ class AiInsightsSection extends StatelessWidget {
           Center(
             child: InkWell(
               onTap: () {
-                print("View Full Analysis Clicked");
+                if (channel != null) {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: const Duration(milliseconds: 300),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      pageBuilder: (_, _, _) => AiChannelBreakdownPage(channel: channel!),
+                    ),
+                  );
+                } else {
+                  print("View Full Analysis Clicked (no channel loaded)");
+                }
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -69,7 +95,7 @@ class AiInsightsSection extends StatelessWidget {
                       fontWeight: FontWeight.w600
                     ),
                   ),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
                   Icon(
                     Icons.trending_up,
                     color: Colors.redAccent,
