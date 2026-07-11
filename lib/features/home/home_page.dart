@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                 child: QuickAnalyticsSection(channel: channel),
               ),//Quick Analysis
               SliverToBoxAdapter(
-                child: AiInsightsSection(),
+                child: AiInsightsSection(channel: channel),
               ),//Ai Insight
               SliverToBoxAdapter(
                 child: SizedBox(height: 80), // space for floating nav
