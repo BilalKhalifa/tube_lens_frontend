@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:hugeicons/styles/stroke_rounded.dart';
-import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:tube_lens/features/analysis_page/analyze_page.dart';
 import 'package:tube_lens/features/compare_page/compare_page.dart';
@@ -169,19 +168,22 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar>
                     child: SizedBox(
                       width: pillWidth,
                       height: pillHeight,
-                      child: LiquidGlass.withOwnLayer(
-                        settings: LiquidGlassSettings(
-                          thickness: 12,
-                          blur: 6,
-                          refractiveIndex: 1.4,
-                          lightIntensity: 1.5,
-                          saturation: 1.2,
-                          glassColor: widget.activeColor.withValues(alpha: 0.18),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          color: widget.activeColor.withValues(alpha: 0.15),
+                          border: Border.all(
+                            color: widget.activeColor.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.activeColor.withValues(alpha: 0.2),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ],
                         ),
-                        shape: LiquidRoundedSuperellipse(
-                          borderRadius: 28.0,
-                        ),
-                        child: const SizedBox.expand(),
                       ),
                     ),
                   ),

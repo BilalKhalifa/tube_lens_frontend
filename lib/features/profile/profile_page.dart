@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tube_lens/shared/widgets/header_section.dart';
+import 'package:tube_lens/features/auth/services/auth_service.dart';
+import 'package:tube_lens/features/auth/pages/login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -11,6 +13,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
+  final _authService = AuthService(); // <-- Add this line!
+
   // Local toggle states
   bool _verboseLogs = false;
   bool _glowEffects = true;
@@ -55,6 +60,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildDeveloperControlsSection(),
                   const SizedBox(height: 24),
                   _buildLocalConfigSection(),
+                  const SizedBox(height: 24),
+                  _buildSignOutButton(),
                   const SizedBox(height: 100), // bottom navigation spacing
                 ],
               ),
@@ -522,6 +529,55 @@ class _ProfilePageState extends State<ProfilePage> {
           style: const TextStyle(
             color: Colors.white38,
             fontSize: 12,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignOutButton() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFF131926).withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () async {
+            try {
+              await _authService.signOut();
+            } catch (e) {
+              debugPrint("Sign out error: $e");
+            }
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+            }
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
+                SizedBox(width: 12),
+                Text(
+                  "Sign Out",
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
