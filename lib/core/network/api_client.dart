@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../app_config.dart';
 
 class ApiException implements Exception {
@@ -18,6 +19,22 @@ class ApiException implements Exception {
 class ApiClient {
   static const Duration timeoutDuration = Duration(seconds: 20);
 
+  // Helper method to dynamically generate headers with the active JWT token
+  static Map<String, String> _getHeaders() {
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+    };
+
+    // Grab the current active Supabase session
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session != null) {
+      // Attach the JWT token inside the Authorization header
+      headers["Authorization"] = "Bearer ${session.accessToken}";
+    }
+
+    return headers;
+  }
+
   static Future<Map<String, dynamic>> get(String endpoint) async {
     final uri = Uri.parse("${AppConfig.baseUrl}$endpoint");
 
@@ -25,7 +42,7 @@ class ApiClient {
       print("🌍 GET Calling: $uri");
 
       final response = await http
-          .get(uri)
+          .get(uri, headers: _getHeaders())
           .timeout(timeoutDuration);
 
       print("✅ GET Status: ${response.statusCode}");
@@ -51,7 +68,7 @@ class ApiClient {
       final response = await http
           .post(
         uri,
-        headers: {"Content-Type": "application/json"},
+        headers: _getHeaders(),
         body: jsonEncode(body),
       )
           .timeout(timeoutDuration);
