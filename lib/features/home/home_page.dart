@@ -25,9 +25,6 @@ class _HomePageState extends State<HomePage> {
   String? errorMessage;
 
   Future<void> analyzeChannel() async {
-    print("Pressed");
-    print("Input: ${urlController.text}");
-
     final input = urlController.text.trim();
     if (input.isEmpty) return;
 

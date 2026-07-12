@@ -39,14 +39,9 @@ class ApiClient {
     final uri = Uri.parse("${AppConfig.baseUrl}$endpoint");
 
     try {
-      print("🌍 GET Calling: $uri");
-
       final response = await http
           .get(uri, headers: _getHeaders())
           .timeout(timeoutDuration);
-
-      print("✅ GET Status: ${response.statusCode}");
-      print("📥 GET Response: ${response.body}");
 
       return _handleResponse(response);
     } on TimeoutException {
@@ -62,9 +57,6 @@ class ApiClient {
     final uri = Uri.parse("${AppConfig.baseUrl}$endpoint");
 
     try {
-      print("🔥 POST Calling: $uri");
-      print("📦 POST Body: $body");
-
       final response = await http
           .post(
         uri,
@@ -73,14 +65,10 @@ class ApiClient {
       )
           .timeout(timeoutDuration);
 
-      print("✅ POST Status: ${response.statusCode}");
-      print("📥 POST Response: ${response.body}");
-
       return _handleResponse(response);
     } on TimeoutException {
       throw ApiException("Request timed out. Please try again.");
     } catch (e) {
-      print("❌ Network Error: $e");
       throw ApiException("Network error: $e");
     }
   }

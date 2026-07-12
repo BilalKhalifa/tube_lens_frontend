@@ -139,14 +139,22 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar>
           final itemWidth = constraints.maxWidth / itemCount;
 
           return AnimatedBuilder(
-            animation: _pillPosition,
+            animation: _controller,
             builder: (context, _) {
-              final pillLeft =
-                  _pillPosition.value * itemWidth + (itemWidth - pillWidth) / 2;
+              // 1. Calculate the stretch factor (0.0 -> 1.0 at midpoint -> 0.0)
+              final double stretchFactor = (0.5 - (0.5 - _controller.value).abs()) * 2.0;
+              
+              // 2. Dynamically expand the width of the pill during transitions
+              final double currentPillWidth = pillWidth + (stretchFactor * 24.0);
+
+              // 3. Keep the pill centered on the current animated position value
+              final double pillLeft =
+                  _pillPosition.value * itemWidth + (itemWidth - currentPillWidth) / 2;
 
               return Stack(
                 alignment: Alignment.center,
                 children: [
+                  // Frosted Glass Navigation Bar Background
                   ClipRRect(
                     borderRadius: BorderRadius.circular(24),
                     child: BackdropFilter(
@@ -154,32 +162,55 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar>
                       child: Container(
                         height: navHeight,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0.12),
+                              Colors.white.withValues(alpha: 0.03),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderRadius: BorderRadius.circular(24),
                           border: Border.all(
                             color: Colors.white.withValues(alpha: 0.15),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.25),
+                              blurRadius: 16,
+                              spreadRadius: -4,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
+                  // Liquid Stretching Active Indicator Pill
                   Positioned(
                     left: pillLeft,
                     child: SizedBox(
-                      width: pillWidth,
+                      width: currentPillWidth,
                       height: pillHeight,
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(24),
-                          color: widget.activeColor.withValues(alpha: 0.15),
+                          gradient: RadialGradient(
+                            colors: [
+                              widget.activeColor.withValues(alpha: 0.25),
+                              widget.activeColor.withValues(alpha: 0.08),
+                            ],
+                            center: Alignment.center,
+                            radius: 0.8,
+                          ),
                           border: Border.all(
-                            color: widget.activeColor.withValues(alpha: 0.3),
-                            width: 1,
+                            color: widget.activeColor.withValues(alpha: 0.45),
+                            width: 1.2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: widget.activeColor.withValues(alpha: 0.2),
-                              blurRadius: 8,
+                              color: widget.activeColor.withValues(alpha: 0.35),
+                              blurRadius: 12,
                               spreadRadius: 1,
                             ),
                           ],

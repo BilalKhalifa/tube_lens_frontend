@@ -81,8 +81,6 @@ class AiInsightsSection extends StatelessWidget {
                       pageBuilder: (_, _, _) => AiChannelBreakdownPage(channel: channel!),
                     ),
                   );
-                } else {
-                  print("View Full Analysis Clicked (no channel loaded)");
                 }
               },
               child: Row(
