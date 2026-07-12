@@ -43,6 +43,7 @@ dependencies:
   flaticon_downloader: ^0.0.3
   glassy_real_navbar: ^1.0.4
   supabase_flutter: ^2.16.0
+  liquid_glass_bottom_navbar_plus: ^0.0.1
 
 dev_dependencies:
   flutter_test:
